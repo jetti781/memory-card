@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Card Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #222;
+      color: white;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    .game-container {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      grid-gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .card {
+      width: 100px;
+      height: 100px;
+      background-color: #444;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: transparent;
+      transition: transform 0.3s;
+    }
+
+    .card.flipped {
+      background-color: #fff;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <h1>Memory Card Game</h1>
+  <div class="game-container" id="game-container"></div>
+  <p id="moves">Moves: 0</p>
+
+  <script>
+    const gameContainer = document.getElementById("game-container");
+    const movesCounter = document.getElementById("moves");
+    let moves = 0;
+
+    const emojis = ["🍎", "🍊", "🍉", "🍌", "🍇", "🍓", "🥝", "🍍"];
+    let cardsArray = [...emojis, ...emojis]; // Duplicate for pairs
+
+    // Shuffle cards
+    cardsArray.sort(() => 0.5 - Math.random());
+
+    // Create cards
+    cardsArray.forEach(emoji => {
+      const card = document.createElement("div");
+      card.classList.add("card");
+      card.setAttribute("data-emoji", emoji);
+      card.innerText = emoji;
+      gameContainer.appendChild(card);
+    });
+
+    let firstCard = null;
+    let secondCard = null;
+    let lockBoard = false;
+
+    gameContainer.addEventListener("click", e => {
+      const clicked = e.target;
+
+      if (!clicked.classList.contains("card") || lockBoard || clicked === firstCard) {
+        return;
+      }
+
+      clicked.classList.add("flipped");
+
+      if (!firstCard) {
+        firstCard = clicked;
+        return;
+      }
+
+      secondCard = clicked;
+      moves++;
+      movesCounter.innerText = `Moves: ${moves}`;
+
+      if (firstCard.dataset.emoji === secondCard.dataset.emoji) {
+        firstCard = null;
+        secondCard = null;
+      } else {
+        lockBoard = true;
+        setTimeout(() => {
+          firstCard.classList.remove("flipped");
+          secondCard.classList.remove("flipped");
+          firstCard = null;
+          secondCard = null;
+          lockBoard = false;
+        }, 1000);
+      }
+    });
+  </script>
+</body>
+</html>
